@@ -3,8 +3,17 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import Landing from "./pages/Landing";
+import AuthPage from "./pages/AuthPage";
+import Dashboard from "./pages/Dashboard";
+import Chatbot from "./pages/Chatbot";
+import Journal from "./pages/Journal";
+import VentingRoom from "./pages/VentingRoom";
+import GrowthPlan from "./pages/GrowthPlan";
+import Therapy from "./pages/Therapy";
+import EmotionalHealth from "./pages/EmotionalHealth";
+import AppLayout from "./components/AppLayout";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -15,8 +24,16 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<AuthPage mode="login" />} />
+          <Route path="/signup" element={<AuthPage mode="signup" />} />
+          <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
+          <Route path="/chatbot" element={<AppLayout><Chatbot /></AppLayout>} />
+          <Route path="/journal" element={<AppLayout><Journal /></AppLayout>} />
+          <Route path="/venting" element={<AppLayout><VentingRoom /></AppLayout>} />
+          <Route path="/growth-plan" element={<AppLayout><GrowthPlan /></AppLayout>} />
+          <Route path="/therapy" element={<AppLayout><Therapy /></AppLayout>} />
+          <Route path="/emotional-health" element={<AppLayout><EmotionalHealth /></AppLayout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
