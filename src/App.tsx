@@ -12,6 +12,7 @@ import VentingRoom from "./pages/VentingRoom";
 import GrowthPlan from "./pages/GrowthPlan";
 import Therapy from "./pages/Therapy";
 import EmotionalHealth from "./pages/EmotionalHealth";
+import Pricing from "./pages/Pricing";
 import AppLayout from "./components/AppLayout";
 import NotFound from "./pages/NotFound";
 
