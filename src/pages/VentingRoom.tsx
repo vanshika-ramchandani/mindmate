@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { MessageSquare, Heart, Handshake, Star } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useI18n } from "@/lib/i18n";
+import PremiumGate from "@/components/PremiumGate";
 
 type Post = { id: string; text: string; time: string; reactions: { support: number; relate: number; encourage: number } };
 
@@ -15,7 +17,8 @@ const initialPosts: Post[] = [
   { id: "5", text: "Small win today: I got out of bed, took a shower, and went for a 10-minute walk. Some days that's enough.", time: "12 hours ago", reactions: { support: 67, relate: 22, encourage: 41 } },
 ];
 
-export default function VentingRoom() {
+function VentingContent() {
+  const { t } = useI18n();
   const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [text, setText] = useState("");
   const { toast } = useToast();
@@ -25,7 +28,7 @@ export default function VentingRoom() {
     const post: Post = { id: Date.now().toString(), text, time: "Just now", reactions: { support: 0, relate: 0, encourage: 0 } };
     setPosts([post, ...posts]);
     setText("");
-    toast({ title: "Posted anonymously 💜" });
+    toast({ title: t("vent.posted") });
   };
 
   const react = (id: string, type: keyof Post["reactions"]) => {
@@ -36,15 +39,15 @@ export default function VentingRoom() {
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-          <MessageSquare className="w-6 h-6 text-primary" /> Anonymous Venting Room
+          <MessageSquare className="w-6 h-6 text-primary" /> {t("vent.title")}
         </h1>
-        <p className="text-muted-foreground mt-1">A safe space to express yourself. No names, no judgment.</p>
+        <p className="text-muted-foreground mt-1">{t("vent.desc")}</p>
       </motion.div>
 
       <div className="bg-card rounded-2xl shadow-card border border-border/50 p-6">
-        <Textarea placeholder="What's weighing on your heart? Let it out…" value={text} onChange={e => setText(e.target.value)}
+        <Textarea placeholder={t("vent.placeholder")} value={text} onChange={e => setText(e.target.value)}
           className="min-h-[100px] bg-muted/30 border-border/50 resize-none" />
-        <Button onClick={submit} className="mt-3 gradient-calm text-primary-foreground border-0 hover:opacity-90">Post Anonymously</Button>
+        <Button onClick={submit} className="mt-3 gradient-calm text-primary-foreground border-0 hover:opacity-90">{t("vent.post")}</Button>
       </div>
 
       <div className="space-y-4">
@@ -56,9 +59,9 @@ export default function VentingRoom() {
               <span className="text-xs text-muted-foreground">{post.time}</span>
               <div className="flex gap-2">
                 {([
-                  { key: "support" as const, icon: "❤️", label: "Support" },
-                  { key: "relate" as const, icon: "🤝", label: "Relate" },
-                  { key: "encourage" as const, icon: "🌟", label: "Encourage" },
+                  { key: "support" as const, icon: "❤️" },
+                  { key: "relate" as const, icon: "🤝" },
+                  { key: "encourage" as const, icon: "🌟" },
                 ]).map(r => (
                   <button key={r.key} onClick={() => react(post.id, r.key)}
                     className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-muted/50 hover:bg-muted text-xs transition">
@@ -72,5 +75,13 @@ export default function VentingRoom() {
         ))}
       </div>
     </div>
+  );
+}
+
+export default function VentingRoom() {
+  return (
+    <PremiumGate>
+      <VentingContent />
+    </PremiumGate>
   );
 }

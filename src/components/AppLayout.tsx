@@ -3,25 +3,30 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Brain, LayoutDashboard, MessageCircle, BookOpen, MessageSquare, Sparkles, Video, BarChart3, LogOut, Menu, X, CreditCard } from "lucide-react";
 import { useState } from "react";
-
-const navItems = [
-  { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-  { label: "Chatbot", path: "/chatbot", icon: MessageCircle },
-  { label: "Journal", path: "/journal", icon: BookOpen },
-  { label: "Venting Room", path: "/venting", icon: MessageSquare },
-  { label: "Growth Plan", path: "/growth-plan", icon: Sparkles },
-  { label: "Emotional Health", path: "/emotional-health", icon: BarChart3 },
-  { label: "Therapy", path: "/therapy", icon: Video },
-  { label: "Pricing", path: "/pricing", icon: CreditCard },
-];
+import { useI18n } from "@/lib/i18n";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { t } = useI18n();
+
+  const navItems = [
+    { label: t("nav.dashboard"), path: "/dashboard", icon: LayoutDashboard },
+    { label: t("nav.chatbot"), path: "/chatbot", icon: MessageCircle },
+    { label: t("nav.journal"), path: "/journal", icon: BookOpen },
+    { label: t("nav.venting"), path: "/venting", icon: MessageSquare },
+    { label: t("nav.growth"), path: "/growth-plan", icon: Sparkles },
+    { label: t("nav.emotional"), path: "/emotional-health", icon: BarChart3 },
+    { label: t("nav.therapy"), path: "/therapy", icon: Video },
+    { label: t("nav.pricing"), path: "/pricing", icon: CreditCard },
+  ];
 
   const logout = () => {
-    localStorage.removeItem("mindmate_user");
+    const lang = localStorage.getItem("mindmate_lang");
+    localStorage.clear();
+    if (lang) localStorage.setItem("mindmate_lang", lang);
     navigate("/");
   };
 
@@ -46,10 +51,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             </button>
           ))}
         </nav>
+        <div className="px-3 pb-2">
+          <LanguageSwitcher className="justify-center mb-2" />
+        </div>
         <div className="px-3 pb-4">
           <button onClick={logout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-destructive transition-all">
             <LogOut className="w-4 h-4" />
-            Logout
+            {t("nav.logout")}
           </button>
         </div>
       </aside>
@@ -63,9 +71,12 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             </div>
             <span className="font-semibold font-display text-foreground">MindMate</span>
           </div>
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 rounded-lg hover:bg-secondary text-foreground">
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 rounded-lg hover:bg-secondary text-foreground">
+              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </header>
 
         {mobileOpen && (
@@ -81,7 +92,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               </button>
             ))}
             <button onClick={logout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-destructive">
-              <LogOut className="w-4 h-4" /> Logout
+              <LogOut className="w-4 h-4" /> {t("nav.logout")}
             </button>
           </motion.div>
         )}
