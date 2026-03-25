@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { BarChart3, TrendingDown, TrendingUp, Brain } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 export default function EmotionalHealth() {
+  const { t } = useI18n();
   const [moodHistory, setMoodHistory] = useState<number[]>([]);
 
   useEffect(() => {
@@ -20,33 +22,30 @@ export default function EmotionalHealth() {
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-          <BarChart3 className="w-6 h-6 text-primary" /> Emotional Health Dashboard
+          <BarChart3 className="w-6 h-6 text-primary" /> {t("emotional.title")}
         </h1>
-        <p className="text-muted-foreground mt-1">Your emotional patterns at a glance.</p>
+        <p className="text-muted-foreground mt-1">{t("emotional.desc")}</p>
       </motion.div>
 
-      {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           className="bg-card rounded-2xl shadow-card border border-border/50 p-5">
-          <span className="text-sm text-muted-foreground font-medium">Average Mood</span>
+          <span className="text-sm text-muted-foreground font-medium">{t("emotional.avg_mood")}</span>
           <div className="flex items-center gap-2 mt-2">
             <span className="text-3xl">{moodLabels[Math.round(avg)] || "😐"}</span>
             <div className="flex items-center gap-1 text-sm">
               {trend <= 0 ? <TrendingUp className="w-4 h-4 text-green-500" /> : <TrendingDown className="w-4 h-4 text-red-400" />}
-              <span className={trend <= 0 ? "text-green-600" : "text-red-500"}>{trend <= 0 ? "Improving" : "Declining"}</span>
+              <span className={trend <= 0 ? "text-green-600" : "text-red-500"}>{trend <= 0 ? t("emotional.improving") : t("emotional.declining")}</span>
             </div>
           </div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
           className="bg-card rounded-2xl shadow-card border border-border/50 p-5">
-          <span className="text-sm text-muted-foreground font-medium">Anxiety Level</span>
+          <span className="text-sm text-muted-foreground font-medium">{t("emotional.anxiety")}</span>
           <div className="mt-2">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-2xl font-bold text-card-foreground">{anxiety}%</span>
-            </div>
-            <div className="h-2 rounded-full bg-muted overflow-hidden">
+            <span className="text-2xl font-bold text-card-foreground">{anxiety}%</span>
+            <div className="h-2 rounded-full bg-muted overflow-hidden mt-1">
               <motion.div initial={{ width: 0 }} animate={{ width: `${anxiety}%` }} transition={{ duration: 1, delay: 0.3 }}
                 className="h-full rounded-full" style={{ background: `hsl(${Math.max(0, 120 - anxiety * 1.2)} 60% 55%)` }} />
             </div>
@@ -55,12 +54,10 @@ export default function EmotionalHealth() {
 
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           className="bg-card rounded-2xl shadow-card border border-border/50 p-5">
-          <span className="text-sm text-muted-foreground font-medium">Stress Index</span>
+          <span className="text-sm text-muted-foreground font-medium">{t("emotional.stress")}</span>
           <div className="mt-2">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-2xl font-bold text-card-foreground">{stress}%</span>
-            </div>
-            <div className="h-2 rounded-full bg-muted overflow-hidden">
+            <span className="text-2xl font-bold text-card-foreground">{stress}%</span>
+            <div className="h-2 rounded-full bg-muted overflow-hidden mt-1">
               <motion.div initial={{ width: 0 }} animate={{ width: `${stress}%` }} transition={{ duration: 1, delay: 0.4 }}
                 className="h-full rounded-full" style={{ background: `hsl(${Math.max(0, 120 - stress * 1.2)} 60% 55%)` }} />
             </div>
@@ -68,10 +65,9 @@ export default function EmotionalHealth() {
         </motion.div>
       </div>
 
-      {/* Mood History Chart */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
         className="bg-card rounded-2xl shadow-card border border-border/50 p-6">
-        <h2 className="text-lg font-semibold text-card-foreground mb-4">Mood History</h2>
+        <h2 className="text-lg font-semibold text-card-foreground mb-4">{t("emotional.history")}</h2>
         <div className="flex items-end gap-2 h-40">
           {moodHistory.slice(-14).map((m, i) => (
             <motion.div key={i} initial={{ height: 0 }} animate={{ height: `${((4 - m) / 4) * 100}%` }} transition={{ duration: 0.5, delay: i * 0.04 }}
@@ -79,15 +75,14 @@ export default function EmotionalHealth() {
           ))}
         </div>
         <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-          <span>Older</span><span>Recent</span>
+          <span>{t("emotional.older")}</span><span>{t("emotional.recent")}</span>
         </div>
       </motion.div>
 
-      {/* Weekly Summary */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
         className="bg-card rounded-2xl shadow-card border border-border/50 p-6">
         <h2 className="text-lg font-semibold text-card-foreground mb-3 flex items-center gap-2">
-          <Brain className="w-5 h-5 text-primary" /> Weekly Summary
+          <Brain className="w-5 h-5 text-primary" /> {t("emotional.summary")}
         </h2>
         <div className="space-y-2 text-sm text-muted-foreground">
           <p>📊 You logged <span className="font-semibold text-card-foreground">{moodHistory.length}</span> mood entries total.</p>

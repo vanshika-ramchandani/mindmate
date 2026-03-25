@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Phone, Heart, Wind } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
 import {
   Dialog,
   DialogContent,
@@ -16,15 +17,17 @@ const helplines = [
 ];
 
 export default function CrisisModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useI18n();
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="bg-card border-destructive/30 max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-destructive text-xl">
-            <Heart className="w-5 h-5" /> You're Not Alone
+            <Heart className="w-5 h-5" /> {t("crisis.title")}
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            We care about you. Please reach out to someone who can help.
+            {t("crisis.desc")}
           </DialogDescription>
         </DialogHeader>
 
@@ -45,14 +48,12 @@ export default function CrisisModal({ open, onClose }: { open: boolean; onClose:
         <div className="mt-4 p-4 rounded-xl bg-lavender-light">
           <div className="flex items-center gap-2 mb-2">
             <Wind className="w-4 h-4 text-primary" />
-            <span className="font-semibold text-sm text-accent-foreground">Try This Breathing Exercise</span>
+            <span className="font-semibold text-sm text-accent-foreground">{t("crisis.breathing")}</span>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Breathe in slowly for 4 seconds… Hold for 7 seconds… Exhale gently for 8 seconds. Repeat 3 times.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("crisis.breathing_desc")}</p>
         </div>
 
-        <Button onClick={onClose} variant="outline" className="w-full mt-2">I'm feeling better</Button>
+        <Button onClick={onClose} variant="outline" className="w-full mt-2">{t("crisis.dismiss")}</Button>
       </DialogContent>
     </Dialog>
   );

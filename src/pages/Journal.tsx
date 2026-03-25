@@ -4,6 +4,7 @@ import { BookOpen, AlertTriangle, Lightbulb, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useI18n } from "@/lib/i18n";
 
 type Entry = { id: string; text: string; date: string; analysis?: { pattern: string; reframe: string } };
 
@@ -29,6 +30,7 @@ function analyzeText(text: string): { pattern: string; reframe: string } | null 
 }
 
 export default function Journal() {
+  const { t } = useI18n();
   const [entries, setEntries] = useState<Entry[]>([]);
   const [text, setText] = useState("");
   const [showAnalysis, setShowAnalysis] = useState<{ pattern: string; reframe: string } | null>(null);
@@ -48,7 +50,7 @@ export default function Journal() {
     localStorage.setItem("mindmate_journal", JSON.stringify(updated));
     setShowAnalysis(analysis);
     setText("");
-    toast({ title: "Entry saved 📝" });
+    toast({ title: t("journal.saved") });
   };
 
   const deleteEntry = (id: string) => {
@@ -61,15 +63,15 @@ export default function Journal() {
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-          <BookOpen className="w-6 h-6 text-primary" /> AI Mental Health Journal
+          <BookOpen className="w-6 h-6 text-primary" /> {t("journal.title")}
         </h1>
-        <p className="text-muted-foreground mt-1">Write freely. Your thoughts are analyzed for patterns with care.</p>
+        <p className="text-muted-foreground mt-1">{t("journal.desc")}</p>
       </motion.div>
 
       <div className="bg-card rounded-2xl shadow-card border border-border/50 p-6">
-        <Textarea placeholder="What's on your mind today? Write freely…" value={text} onChange={e => setText(e.target.value)}
+        <Textarea placeholder={t("journal.placeholder")} value={text} onChange={e => setText(e.target.value)}
           className="min-h-[150px] bg-muted/30 border-border/50 resize-none text-card-foreground" />
-        <Button onClick={save} className="mt-3 gradient-calm text-primary-foreground border-0 hover:opacity-90">Save Entry</Button>
+        <Button onClick={save} className="mt-3 gradient-calm text-primary-foreground border-0 hover:opacity-90">{t("journal.save")}</Button>
       </div>
 
       <AnimatePresence>
@@ -78,12 +80,12 @@ export default function Journal() {
             className="bg-card rounded-2xl shadow-card border border-border/50 p-6 space-y-3">
             <div className="flex items-center gap-2 text-amber-600">
               <AlertTriangle className="w-5 h-5" />
-              <span className="font-semibold">Possible negative thinking pattern</span>
+              <span className="font-semibold">{t("journal.pattern")}</span>
             </div>
             <p className="text-sm text-muted-foreground bg-pastel-yellow/50 px-3 py-2 rounded-lg">{showAnalysis.pattern}</p>
             <div className="flex items-center gap-2 text-primary">
               <Lightbulb className="w-5 h-5" />
-              <span className="font-semibold">Suggested positive reframe</span>
+              <span className="font-semibold">{t("journal.reframe")}</span>
             </div>
             <p className="text-sm text-muted-foreground bg-lavender-light/50 px-3 py-2 rounded-lg">{showAnalysis.reframe}</p>
             <Button variant="ghost" size="sm" onClick={() => setShowAnalysis(null)}>Dismiss</Button>
@@ -93,7 +95,7 @@ export default function Journal() {
 
       {entries.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">Past Entries</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t("journal.past")}</h2>
           {entries.map(entry => (
             <motion.div key={entry.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               className="bg-card rounded-2xl shadow-card border border-border/50 p-4">
