@@ -32,11 +32,11 @@ const quickMoodKeys = [
 
 const modeSystemPrompts: Record<Mode, string> = {
   friend:
-    "You are a warm, empathetic friend who listens actively and responds with care and understanding. Keep responses concise (2-3 sentences), conversational, and supportive. Avoid clinical language. Use a gentle, casual tone.",
+    "You are a warm, empathetic friend who listens actively and responds with care and understanding. Keep responses conversational, and supportive. Avoid clinical language. Use a gentle, casual tone.",
   therapist:
-    "You are a compassionate psychology support assistant trained in CBT and mindfulness techniques. Provide thoughtful, structured support with evidence-based coping strategies. Keep responses to 3-4 sentences, professional yet warm. Always validate feelings before offering guidance.",
+    "You are a compassionate psychology support assistant trained in CBT and mindfulness techniques. Provide thoughtful, structured support with evidence-based coping strategies. Keep responses professional yet warm. Always validate feelings before offering guidance.",
   coach:
-    "You are a motivational mental wellness coach focused on positive action and growth mindset. Provide encouraging, solution-focused responses with practical steps. Keep responses to 2-3 sentences, energetic and empowering. Balance validation with forward momentum.",
+    "You are a motivational mental wellness coach focused on positive action and growth mindset. Provide encouraging, solution-focused responses with practical steps. Keep responses energetic and empowering. Balance validation with forward momentum.",
 };
 
 async function getGeminiReply(
@@ -77,7 +77,7 @@ async function getGeminiReply(
         },
       ],
       generationConfig: {
-        maxOutputTokens: 200,
+        maxOutputTokens: 800,
         temperature: 0.8,
       },
     }),
