@@ -39,6 +39,107 @@ const modeSystemPrompts: Record<Mode, string> = {
     "You are a motivational mental wellness coach focused on positive action and growth mindset. Provide encouraging, solution-focused responses with practical steps. Keep responses energetic and empowering. Balance validation with forward momentum.",
 };
 
+const FORMATTING_INSTRUCTIONS = `
+RESPONSE LENGTH — strictly match the complexity of what was asked:
+- Simple feeling check-in or one-liner (e.g. "I'm sad", "I feel anxious"): 2–3 sentences max. Do NOT list tips or strategies unprompted.
+- Short question (e.g. "how do I calm down?"): 3–5 sentences or a short list of 2–3 points.
+- Detailed question or request for advice/help (e.g. "I've been feeling anxious for weeks, what should I do?"): full structured response with sections if helpful.
+- Never pad short messages with long replies. Mirror the user's energy and depth.
+
+FORMATTING RULES — use markdown for structure when the response is more than 3 sentences:
+- Use **bold** for key terms or important phrases only.
+- Use bullet points (- item) for lists of tips, steps, or strategies.
+- Use numbered lists (1. step) for sequential instructions.
+- Add a single relevant emoji at the start of each bullet point where it feels natural.
+- Keep paragraphs short (2–3 sentences). Add a blank line between paragraphs.
+- Never use headers (##) for short responses. Only use headers if the response has 3+ distinct sections.
+- Do NOT use bold for entire sentences. Bold is for 1–4 words max.
+`;
+
+// Parses markdown-like text into React-renderable nodes
+function parseMarkdown(text: string): React.ReactNode[] {
+  const lines = text.split("\n");
+  const nodes: React.ReactNode[] = [];
+  let key = 0;
+
+  const parseLine = (line: string): React.ReactNode => {
+    const parts = line.split(/\*\*(.+?)\*\*/g);
+    return parts.map((part, i) =>
+      i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+    );
+  };
+
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+
+    if (line.trim() === "") {
+      nodes.push(<div key={key++} className="h-2" />);
+      i++;
+      continue;
+    }
+
+    if (line.startsWith("## ")) {
+      nodes.push(
+        <p key={key++} className="font-semibold text-sm mt-2 mb-0.5">
+          {parseLine(line.slice(3))}
+        </p>
+      );
+      i++;
+      continue;
+    }
+
+    if (line.startsWith("- ") || line.startsWith("• ")) {
+      const bullets: React.ReactNode[] = [];
+      while (i < lines.length && (lines[i].startsWith("- ") || lines[i].startsWith("• "))) {
+        bullets.push(
+          <li key={i} className="flex gap-1.5 leading-snug">
+            <span className="mt-0.5 shrink-0">•</span>
+            <span>{parseLine(lines[i].slice(2))}</span>
+          </li>
+        );
+        i++;
+      }
+      nodes.push(
+        <ul key={key++} className="space-y-1 my-1 text-sm">
+          {bullets}
+        </ul>
+      );
+      continue;
+    }
+
+    if (/^\d+\.\s/.test(line)) {
+      const items: React.ReactNode[] = [];
+      let num = 1;
+      while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
+        items.push(
+          <li key={i} className="flex gap-1.5 leading-snug">
+            <span className="shrink-0 font-medium">{num}.</span>
+            <span>{parseLine(lines[i].replace(/^\d+\.\s/, ""))}</span>
+          </li>
+        );
+        i++;
+        num++;
+      }
+      nodes.push(
+        <ol key={key++} className="space-y-1 my-1 text-sm">
+          {items}
+        </ol>
+      );
+      continue;
+    }
+
+    nodes.push(
+      <p key={key++} className="leading-relaxed">
+        {parseLine(line)}
+      </p>
+    );
+    i++;
+  }
+
+  return nodes;
+}
+
 async function getGeminiReply(
   text: string,
   mode: Mode,
@@ -52,7 +153,11 @@ async function getGeminiReply(
       ? "Respond in Gujarati."
       : "Respond in English.";
 
-  const systemPrompt = `${modeSystemPrompts[mode]} ${languageInstruction} If the user expresses crisis or suicidal thoughts, respond with immediate empathy and gently encourage them to seek professional help or a crisis helpline.`;
+  const systemPrompt = `${modeSystemPrompts[mode]} ${languageInstruction}
+
+${FORMATTING_INSTRUCTIONS}
+
+If the user expresses crisis or suicidal thoughts, respond with immediate empathy and gently encourage them to seek professional help or a crisis helpline.`;
 
   // Build conversation context (last 6 messages for context window efficiency)
   const recentHistory = conversationHistory.slice(-6);
@@ -77,7 +182,7 @@ async function getGeminiReply(
         },
       ],
       generationConfig: {
-        maxOutputTokens: 800,
+
         temperature: 0.8,
       },
     }),
@@ -207,7 +312,11 @@ export default function Chatbot() {
                     : "bg-card shadow-card border border-border/50 text-card-foreground rounded-bl-md"
                 }`}
               >
-                {msg.text}
+                {msg.role === "bot" ? (
+                  <div className="space-y-0.5">{parseMarkdown(msg.text)}</div>
+                ) : (
+                  msg.text
+                )}
               </div>
             </motion.div>
           ))}
